@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2016 at 01:31 AM
+-- Generation Time: Mar 10, 2016 at 01:46 AM
 -- Server version: 10.1.9-MariaDB
 -- PHP Version: 5.6.15
 
@@ -43,6 +43,24 @@ CREATE TABLE `assignment1` (
 INSERT INTO `assignment1` (`UserID`, `FirstName`, `LastName`, `Sex`, `School`, `Age`, `PostID`) VALUES
 (1, 'a', 'b', 'Male', 'San Jose State University', 88, 33);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `post`
+--
+
+CREATE TABLE `post` (
+  `PostID` int(11) NOT NULL,
+  `Text` varchar(5000) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `post`
+--
+
+INSERT INTO `post` (`PostID`, `Text`) VALUES
+(33, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+
 --
 -- Indexes for dumped tables
 --
@@ -55,6 +73,12 @@ ALTER TABLE `assignment1`
   ADD UNIQUE KEY `PostID_2` (`PostID`),
   ADD UNIQUE KEY `UserID` (`UserID`),
   ADD KEY `PostID` (`PostID`);
+
+--
+-- Indexes for table `post`
+--
+ALTER TABLE `post`
+  ADD PRIMARY KEY (`PostID`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
