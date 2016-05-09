@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2016 at 08:42 AM
+-- Generation Time: May 09, 2016 at 02:59 AM
 -- Server version: 5.7.9
 -- PHP Version: 5.6.15
 
@@ -30,10 +30,22 @@ USE `social_network`;
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE IF NOT EXISTS `comment` (
-  `CommentID` bigint(20) NOT NULL,
+  `CommentID` bigint(20) NOT NULL AUTO_INCREMENT,
   `Comment` longtext NOT NULL,
   PRIMARY KEY (`CommentID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `comment`
+--
+
+INSERT INTO `comment` (`CommentID`, `Comment`) VALUES
+(1, 'Test Comment'),
+(2, 'Hi Jane - Tom'),
+(3, 'Testing'),
+(5, 'Taylor Swift commenting'),
+(6, 'Taylor&#39;s comment'),
+(7, 'I&#39;m John Doe');
 
 -- --------------------------------------------------------
 
@@ -48,6 +60,28 @@ CREATE TABLE IF NOT EXISTS `friendship` (
   KEY `UserID` (`UserID`),
   KEY `FriendsID` (`FriendsID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `friendship`
+--
+
+INSERT INTO `friendship` (`UserID`, `FriendsID`) VALUES
+(25, 27),
+(27, 25),
+(25, 28),
+(28, 25),
+(26, 25),
+(25, 26),
+(26, 27),
+(27, 26),
+(23, 25),
+(25, 23),
+(23, 27),
+(27, 23),
+(28, 26),
+(26, 28),
+(28, 27),
+(27, 28);
 
 -- --------------------------------------------------------
 
@@ -65,7 +99,18 @@ CREATE TABLE IF NOT EXISTS `profile` (
   `Occupation` varchar(65) NOT NULL,
   `Interests` text NOT NULL,
   PRIMARY KEY (`ProfileID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `profile`
+--
+
+INSERT INTO `profile` (`ProfileID`, `Gender`, `Age`, `City`, `State`, `Occupation`, `Interests`) VALUES
+(12, 'Female', 19, 'San Jose', 'CA', 'Singer', 'Music'),
+(13, 'Male', 7, 'cc', 'cc', 'cc', 'cc'),
+(14, 'Female', 24, 'Los Angeles', 'CA', 'Singer', 'Music'),
+(15, 'Male', 30, 'San Francisco', 'CA', 'Actor', 'Acting'),
+(19, 'Male', 25, 'Test', 'Test', 'Test', 'Test');
 
 -- --------------------------------------------------------
 
@@ -80,6 +125,38 @@ CREATE TABLE IF NOT EXISTS `profilecomment` (
   KEY `ProfileID` (`ProfileID`),
   KEY `CommentID` (`CommentID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `profilecomment`
+--
+
+INSERT INTO `profilecomment` (`ProfileID`, `CommentID`) VALUES
+(12, 1),
+(12, 2),
+(19, 3),
+(13, 5),
+(12, 6),
+(14, 7);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `request`
+--
+
+DROP TABLE IF EXISTS `request`;
+CREATE TABLE IF NOT EXISTS `request` (
+  `UserID` bigint(20) NOT NULL,
+  `FriendID` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `request`
+--
+
+INSERT INTO `request` (`UserID`, `FriendID`) VALUES
+(28, 23),
+(26, 23);
 
 -- --------------------------------------------------------
 
@@ -97,6 +174,18 @@ CREATE TABLE IF NOT EXISTS `senderrecievercomment` (
   KEY `RecieverID` (`RecieverID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `senderrecievercomment`
+--
+
+INSERT INTO `senderrecievercomment` (`CommentID`, `SenderID`, `RecieverID`) VALUES
+(1, 23, 25),
+(2, 28, 25),
+(3, 25, 23),
+(5, 27, 26),
+(6, 27, 25),
+(7, 26, 27);
+
 -- --------------------------------------------------------
 
 --
@@ -111,15 +200,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   `FirstName` varchar(65) NOT NULL,
   `LastName` varchar(65) NOT NULL,
   PRIMARY KEY (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`UserID`, `Email`, `Password`, `FirstName`, `LastName`) VALUES
-(23, 'troynguyen@gmail.com', '2121', 'Troy', 'Nguyen'),
-(24, '', '', '', '');
+(23, 'troynguyen@gmail.com', '111', 'Troy', 'Nguyen'),
+(25, 'janedoe@gmail.com', '111', 'Jane', 'Doe'),
+(26, 'johndoe@gmail.com', '111', 'John', 'Doe'),
+(27, 'ts@gmail.com', '111', 'Taylor ', 'Swift'),
+(28, 'tom@gmail.com', '111', 'Tom', 'Smith');
 
 -- --------------------------------------------------------
 
@@ -134,6 +226,17 @@ CREATE TABLE IF NOT EXISTS `userprofile` (
   KEY `UserID` (`UserID`),
   KEY `ProfileID` (`ProfileID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `userprofile`
+--
+
+INSERT INTO `userprofile` (`UserID`, `ProfileID`) VALUES
+(25, 12),
+(26, 13),
+(27, 14),
+(28, 15),
+(23, 19);
 
 --
 -- Constraints for dumped tables

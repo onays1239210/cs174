@@ -15,36 +15,125 @@
 <!-- Local CSS Files -->
 <link rel="stylesheet" href="css/bootstrap.css">
 <link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/bootstrap.theme.css">
-<link rel="stylesheet" href="css/bootstrap.theme.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="css/default.css">
     
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
 <script src="js/bootstrap.js"></script>
 <script src="js/bootstrap.min.js"></script>
-    
+<script src="js/defaultscript.js"></script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>	
     <script>
-                     window.onload = function() { 
-						$.ajax({
-							 url: 'php/check.php',
-							 success: function (response) {
-							 var data = JSON.parse(response);
-								if(data.auth == true){
-									$('#username').html(data.fname + " " +data.lname);
-									$('#gender').html(data.gender);
-									$('#age').html(data.age);
-									$('#city').html(data.city);
-									$('#state').html(data.state);
-									$('#occupation').html(data.occupation);
-									$('#interests').html(data.interests);
-									
-								}else{
-									window.location.href = 'index.html';
-								}
-							}	
-						}); 
-					};
+   function getFriends(id){
+		$.post("php/getfriends.php",{uid: id},
+		function(data){
+			var list = JSON.parse(data);
+			list.forEach(function(i) {
+				updateFriends(i);
+			});
+		});
+	}		
+	
+	function updateFriends(friend){
+		var a = $('<a />');
+		$('#FriendList').append('<p>');
+		a.attr('href', "profile.php?id="+ friend.FriendsID);
+		a.text(friend.FirstName + " " + friend.LastName);
+		$('#FriendList').append(a);
+		$('#FriendList').append('</p>');
+	}
+	
+	function getRequest(id){
+		var count = 0;
+		$.post("php/getRequest.php",{pid: id},
+		function(data){
+			var list = JSON.parse(data);
+			list.forEach(function(i) {
+				updateRequest(i);
+				count++;
+			});
+			
+			if(list)
+				$('#requests-indicator').text(count);
+			else
+				$('#requests-indicator').hide();
+			
+		});
+	}		
+	
+	function updateRequest(request){
+				$('#RequestList').append('<div class="row"><div class="col-sm-6"><div class="well text-center">'
+					+" "+"<a href='profile.php?id=" + request.UserID + "'>" + request.FirstName+" "+ request.LastName + "</a></div></div>"
+					+ '<div class="col-sm-4"><div class="well">'
+					+"<button type='button'"+ 'class="btn btn-primary btn-sm"' + "onclick='Comfirmrequest(" 
+					+ '"' + request.UserID + '"' + ")' >Yes </button>&nbsp " 
+					+ "<button type='button'"+ 'class="btn btn-primary btn-sm"' +" onclick='Denyrequest(" 
+					+ '"' + request.UserID + '"' + ")' >No </button><br>"
+					+ '</div></div></div>');
+				$('#RequestList').append('</p>');
+	}
+	//adding friend
+	function Comfirmrequest(UserID, i){
+						 
+		var dataString = 'FriendID='+UserID;
+			$.ajax({
+						type:'POST',
+						data:dataString,
+						url: 'php/addFriend.php',
+						success: function (response) {
+						window.location.reload();
+						}
+					});
+		
+				}
+					
+	//////////////////////////////////////////////////
+	function Denyrequest(UserID, i){
+					 
+		var dataString = 'FriendID='+UserID;
+		$.ajax({
+				type:'POST',
+				data:dataString,
+				url: 'php/denyFriend.php',
+				success: function (response) {
+					window.location.reload();
+			}
+		});
+	
+	}	
+
+	function checksearch(){
+		var Text = document.getElementById('search').value;
+
+		if(!$.trim(Text)) 
+		{
+			return false;
+		}
+		else{
+			window.location.replace ("/searchresults.php?name=" +'\''+Text+'\'');
+		}		
+	}
+	window.onload = function(){
+		$.ajax({
+			url: 'php/check.php',
+			success: function (response) {
+			var data = JSON.parse(response);
+			if(data.auth == true){
+				$('#username').html(data.fname + " " + data.lname);
+				getFriends(data.uid);
+				getRequest(data.uid);
+			}
+			else{
+				window.location.href = 'index.html';
+			}
+		}	
+		}); 
+	};//window.onload 
+	
     </script>
 </head>
 <body>
@@ -52,26 +141,40 @@
     <nav class="navbar navbar-inverse">
       <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
+        <div class="navbar-header col-md-7">
             <a class="navbar-brand" href="index.html" >SocialHub</a>
-        </div>
+     
+     	 <!--<form class="navbar-form" role="search" method="POST" action="searchresults.php" onsubmit="location.href='/searchresults.php?name=' + '\'' + document.getElementById('search').value + '\'';"> -->	
+        	<div class="input-group">
+			<input type="text" class="search-query form-control" id="search" placeholder="Search" style="margin-top:7px;"/>
+			<span class="input-group-btn">
+				<button class="btn btn-default" onclick="return checksearch()" style="margin-top:7px;">
+					<span class="glyphicon glyphicon-search">
+						<span class="sr-only">Search</span>
+					</span>
+				</button>
+			</span>
+			</div>
+		<!-- </form> -->
+		</div>
     
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="profileindex.html"><span class="glyphicon glyphicon-home"></span></a></li>
             <li><a href="aboutus.html">About</a></li>
-            <li><a href="#">News</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="news.html">News</a></li>
+            <li><a href="contact.html">Contact</a></li>
               
-            <li class="dropdown active">
+           <li class="dropdown" id="dropdownmenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <span class="glyphicon glyphicon-user"></span><span class="caret"></span></a>      
+                    <span class="glyphicon glyphicon-user"></span>
+					<span id="requests-indicator" class="badge badge-notify" style="color:white; background-color: red;"></span>
+					<span class="caret"></span></a>      
                 <ul class="dropdown-menu">
-                  <li class="active"><a href="profileindex.html">Profile</a></li>
+                  <li><a href="profileindex.html">Profile</a></li>
                   <li><a href="profilesettings.html">Edit Profile</a></li>
-                  <li><a href="friends">Friends</a></li> 
-                  <li><a href="#">Comments</a></li> 
+                  <li class="active"><a href="friends.html"><span id="dropdown-indicator" class="badge badge-notify" style="color:white; background-color: red;"></span>Friends</a></li> 
                   <li class="divider"></li>
                   <li><a href="#" id="logout">Sign Out</a></li> 
                     <script>
@@ -84,7 +187,7 @@
         }
     });
         });
-		</script>
+				</script>
                 </ul>
               </li>
           </ul>
@@ -95,54 +198,56 @@
 	  
 	<div class="container text-center">    
 	  <div class="row">
-		<div class="col-sm-3 well">
-		  <div class="well">
-			<h2 id="username">John Doe</h2>
-			<hr>
-			<img src="https://pbs.twimg.com/profile_images/1237550450/mstom_400x400.jpg" class="img-circle" height="65" width="65" alt="Avatar">
-		  </div>
-		  <div class="well">
-			<h3>About Me</h3>
-			<hr>
-			  <label>Gender: </label><span id="gender"></span></br>
-			  <label>Age: </label><span id="age"></span></br>
-			  <label>City: </label><span id="city"></span></br>
-			  <label>State: </label><span id="state"></span></br>
-			  <label>Occupation: </label><span id="occupation"></span></br>
-			  <label>Interests: </label><span id="interests"></span>
-		  </div>
-		</div>
-		
-		<div class="col-sm-7">
-		  
-		</div>
-		  
-		  
-		<div class="col-sm-2 well">
-			<h3>Friends</h3>
-			<hr> 
-			<div class="well">
-			<p><a href="#">Friend 1</a></p>
+		<div class="col-md-12 " id="signin-form-index">
+		   <div class="panel panel-default">  
+			<div class="panel-heading">
+						<ul class="nav nav-pills nav-justified">
+							<li class="active" id="FriendList-tab"><a href="#" id="ListLink">Friend List</a></li>
+							<li id="FriendRequest-tab"><a href="#" id="Requestlink">Friend Request<span id="requests-indicator" class="badge badge-notify" style="color:white; background-color: red;"></span></a></li>
+						</ul>
 			</div>
-			<div class="well">
-			<p><a href="#">Friend 2</a></p>
+			<div class="panel-body">
+				<form class="form-horizontal" id="FriendList-form" role="form" method="POST" action="#" style="display: block;">
+							<center>
+							<div class = "col-sm-12" id="FriendList">
+							</div>
+							</center>
+					
+				
+				</form>
+				
+				<form class="form-horizontal" id="FriendRequest-form" role="form" method="POST" action="#" style="display: none;">
+							<center>
+							<div class = "col-sm-12" id="RequestList"></div>
+							</center>
+						
+							
+							<div class="form-group">
+					
+							</div>
+				</form>
+				
 			</div>
-			<div class="well">
-			<p><a href="#">Friend 3</a></p>
-			</div>
-			<div class="well">
-			<p><a href="#">Friend 4</a></p>
-			</div>
-			<div class="well">
-			<p><a href="#">Friend 5</a></p>
-			</div>
-			<div class="well">
-			<p><a href="#">Friend 6</a></p>
-			</div>
-		  </div>
+		   </div>
 		</div>
 	  </div>
 	</div>
+	
+	<!-- tabbed forms script -->
+	<script>
+    $(document).ready( function(){$('#ListLink').click(function(e) {
+		$("#FriendList-form").delay(100).fadeIn(100);
+ 		$("#FriendRequest-form").fadeOut(100);
+		$('#FriendRequest-tab').removeClass('active');
+		$('#FriendList-tab').addClass('active');
+	});
+	$('#Requestlink').click(function(e) {
+		$("#FriendRequest-form").delay(100).fadeIn(100);
+ 		$("#FriendList-form").fadeOut(100);
+		$('#FriendList-tab').removeClass('active');
+		$('#FriendRequest-tab').addClass('active');
+	});	});
+	</script>
 	
 	<footer class="container-fluid text-center">
 	  <p><p>&copy; SJSU CS174 Spring 2016 Project. All rights reserved.</p>
